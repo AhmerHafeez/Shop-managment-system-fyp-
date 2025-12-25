@@ -14,6 +14,8 @@ const ViewSales = () => {
   const salesList = useSelector((state) => state.sale.sales);
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState("");
+  const [inputValue, setInputValue] = useState("");
+  const [filteredSales, setFilteredSales] = useState([]);
   const [printInvoiceData, setPrintInvoiceData] = useState({
     "custmrDetails": {
       cust_id: "",
@@ -26,11 +28,14 @@ const ViewSales = () => {
   })
 
   // Filter sales based on search term
-  const filteredSales = salesList.filter(sale =>
-    sale.cust_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sale.cust_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sale.cust_email?.toLowerCase().includes(searchTerm.toLowerCase())
-  ).reverse();
+  useEffect(() => {
+    const filtered = salesList.filter(sale =>
+      sale.cust_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sale.cust_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      sale.cust_email?.toLowerCase().includes(searchTerm.toLowerCase())
+    ).reverse();
+    setFilteredSales(filtered);
+  }, [salesList, searchTerm]);
 
   const getSales = async () => {
     const token = localStorage.getItem('authToken');
@@ -49,6 +54,8 @@ const ViewSales = () => {
 
       if (result.status) {
         dispatch(setSale(result.data));
+        // Set filtered sales to the full list initially
+        setFilteredSales(result.data.reverse());
       } else {
         console.log('Error::new sales::result', result.message);
       }
@@ -115,12 +122,12 @@ const ViewSales = () => {
             </label>
             <h2 className='text-xl w-full text-center md:text-start'>My Sales</h2>
             {/* search bar */}
-            <form action="" className='hidden md:flex items-center w-1/2' onSubmit={(e) => e.preventDefault()}>
+            <form action="" className='hidden md:flex items-center w-1/2' onSubmit={(e) => { e.preventDefault(); setSearchTerm(inputValue); }}>
               <input
                 type="text"
                 placeholder="Search in sales"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
                 className="input input-bordered rounded-full h-10 lg:w-full"
               />
               <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
@@ -131,7 +138,7 @@ const ViewSales = () => {
           </div>
 
           {/* search bar mobile*/}
-          <form action="" className='flex md:hidden items-center w-full mt-4' onSubmit={(e) => e.preventDefault()}>
+          <form action="" className='flex md:hidden items-center w-full mt-4' onSubmit={(e) => { e.preventDefault(); setSearchTerm(inputValue); }}>
             <input
               type="text"
               placeholder="Search in sales"
