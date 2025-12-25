@@ -5,6 +5,7 @@ import baseUrl from '../../utils/baseurl';
 
 const Aside = () => {
     const location = useLocation();
+    const navigate = useNavigate();
     const showAdd = () => {
         document.getElementById('add_modal').showModal();
     }
@@ -28,17 +29,17 @@ const Aside = () => {
                 if (response.ok) {
                     console.log("Logout successful");
                     // Force a full page reload to reset the application state
-                    window.location.href = '/login';
+                    navigate('/login');
                 } else {
                     // Even if the server logout fails, we still want to clear the token
                     console.error('Logout failed, but token was removed');
-                    window.location.href = '/login';
+                    navigate('/login');
                 }
             } catch (error) {
                 console.error('Error during logout:', error);
                 // Still redirect to login even if there's an error
                 localStorage.removeItem('authToken');
-                window.location.href = '/login';
+                navigate('/login');
             }
         }
 
