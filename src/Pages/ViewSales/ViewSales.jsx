@@ -29,13 +29,24 @@ const ViewSales = () => {
 
   // Filter sales based on search term
   useEffect(() => {
-    const filtered = salesList.filter(sale =>
-      sale.cust_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.cust_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      sale.cust_email?.toLowerCase().includes(searchTerm.toLowerCase())
-    ).reverse();
-    setFilteredSales(filtered);
+    if (searchTerm.trim() === '') {
+      setFilteredSales(salesList.slice().reverse());
+    } else {
+      const filtered = salesList.filter(sale =>
+        sale.cust_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.cust_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        sale.cust_email?.toLowerCase().includes(searchTerm.toLowerCase())
+      ).reverse();
+      setFilteredSales(filtered);
+    }
   }, [salesList, searchTerm]);
+
+  // Auto-clear search when input is empty
+  useEffect(() => {
+    if (inputValue.trim() === '') {
+      setSearchTerm('');
+    }
+  }, [inputValue]);
 
   const getSales = async () => {
     const token = localStorage.getItem('authToken');
@@ -122,34 +133,36 @@ const ViewSales = () => {
             </label>
             <h2 className='text-xl w-full text-center md:text-start'>My Sales</h2>
             {/* search bar */}
-            <form action="" className='hidden md:flex items-center w-1/2' onSubmit={(e) => { e.preventDefault(); setSearchTerm(inputValue); }}>
+            <div className='hidden md:flex items-center w-1/2'>
               <input
                 type="text"
                 placeholder="Search in sales"
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') setSearchTerm(inputValue); }}
                 className="input input-bordered rounded-full h-10 lg:w-full"
               />
-              <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
+              <button type="button" onClick={() => setSearchTerm(inputValue)} className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
                 <MagnifyingGlassIcon className='w-6 h-6' />
               </button>
-            </form>
+            </div>
             {/* search bar */}
           </div>
 
           {/* search bar mobile*/}
-          <form action="" className='flex md:hidden items-center w-full mt-4' onSubmit={(e) => { e.preventDefault(); setSearchTerm(inputValue); }}>
+          <div className='flex md:hidden items-center w-full mt-4'>
             <input
               type="text"
               placeholder="Search in sales"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              onKeyDown={(e) => { if (e.key === 'Enter') setSearchTerm(inputValue); }}
               className="input input-bordered rounded-full h-10 w-full"
             />
-            <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
+            <button type="button" onClick={() => setSearchTerm(inputValue)} className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
               <MagnifyingGlassIcon className='w-6 h-6' />
             </button>
-          </form>
+          </div>
           {/* search bar */}
 
           {/* table start */}
