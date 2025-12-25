@@ -32,7 +32,6 @@ const Dashboard = () => {
         try {
             const response = await fetch(`${baseUrl}/products`, {
                 method: 'GET',
-                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
