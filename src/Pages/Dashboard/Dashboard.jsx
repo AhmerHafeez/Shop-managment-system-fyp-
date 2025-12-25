@@ -11,7 +11,7 @@ import { setProducts } from '../../Redux/products/productSlice';
 import Aside from '../../Components/Aside/Aside';
 
 const Dashboard = () => {
-
+    const [searchTerm, setSearchTerm] = useState("");
     const isLogin = useSelector((state) => state.login.loginStatus)
     const navigate = useNavigate();
 
@@ -20,6 +20,11 @@ const Dashboard = () => {
     const [isFetchFinished, setisFetchFinished] = useState(false);
     const dispatch = useDispatch();
 
+    // Filter products based on search term
+    const filteredProducts = products.filter(product =>
+        product.p_name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     // fetch products:
     const fetchProducts = async () => {
         const token = localStorage.getItem('authToken');
@@ -27,6 +32,7 @@ const Dashboard = () => {
         try {
             const response = await fetch(`${baseUrl}/products`, {
                 method: 'GET',
+                credentials: "include",
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -113,8 +119,16 @@ const Dashboard = () => {
                         </label>
                         <h2 className='text-xl'>Products</h2>
                         {/* search bar */}
-                        <form action="" className='hidden md:flex items-center w-1/2'>
-                            <input type="text" placeholder="Search Procuct" className="input input-bordered rounded-full h-10 lg:w-full" />
+                        <form action="" className='hidden md:flex items-center w-1/2' onSubmit={(e) => e.preventDefault()}>
+                        
+                           <input
+  type="text"
+  placeholder="Search Product"
+  value={searchTerm}
+  onChange={(e) => setSearchTerm(e.target.value)}
+  className="input input-bordered rounded-full h-10 lg:w-full"
+/>
+
                             <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
                                 <MagnifyingGlassIcon className='w-6 h-6' />
                             </button>
@@ -127,14 +141,21 @@ const Dashboard = () => {
                     </div>
 
                     {/* search bar mobile*/}
-                    <form action="" className='flex md:hidden items-center w-full mt-4'>
-                        <input type="text" placeholder="Search Procuct" className="input input-bordered rounded-full h-10 w-full" />
+                    <form action="" className='flex md:hidden items-center w-full mt-4' onSubmit={(e) => e.preventDefault()}>
+                        <input
+                            type="text"
+                            placeholder="Search Product"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="input input-bordered rounded-full h-10 w-full"
+                        />
                         <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
                             <MagnifyingGlassIcon className='w-6 h-6' />
                         </button>
                     </form>
-                    {/* search bar */}
-
+                    
+                    {/* search bar */ }
+                    
                     {/* table start */}
                     <div className="overflow-auto max-h-[80vh]">
                         <table className="table">
@@ -150,7 +171,7 @@ const Dashboard = () => {
                             </thead>
                             <tbody>
 
-                                {products && products.length > 0 && [...products].reverse().map((elem, i, arr) => {
+                                {filteredProducts && filteredProducts.length > 0 && [...filteredProducts].reverse().map((elem, i, arr) => {
                                     return (
                                         <tr className="hover" key={i}>
                                             <th>{i + 1}</th>
@@ -173,6 +194,7 @@ const Dashboard = () => {
                             </tbody>
                         </table>
                     </div>
+                    {isFetchFinished && filteredProducts.length <= 0 && products.length > 0 && <div className='text-sm px-2 text-center'>No products match your search.<br/>Try a different search term!</div>}
                     {isFetchFinished && products.length <= 0 && <div className='text-sm px-2 text-center'>No Items Found!<br/>Click on plus to Get Started!</div>}
                     {/* table end */}
                 </div>
