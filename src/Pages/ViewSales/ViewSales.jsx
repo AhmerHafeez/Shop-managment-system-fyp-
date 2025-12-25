@@ -13,6 +13,7 @@ const ViewSales = () => {
   const isLogin = useSelector((state) => state.login.loginStatus);
   const salesList = useSelector((state) => state.sale.sales);
   const dispatch = useDispatch();
+  const [searchTerm, setSearchTerm] = useState("");
   const [printInvoiceData, setPrintInvoiceData] = useState({
     "custmrDetails": {
       cust_id: "",
@@ -23,6 +24,13 @@ const ViewSales = () => {
       "cartItems": []
     }
   })
+
+  // Filter sales based on search term
+  const filteredSales = salesList.filter(sale =>
+    sale.cust_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    sale.cust_contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    sale.cust_email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   const getSales = async () => {
     const token = localStorage.getItem('authToken');
@@ -107,8 +115,14 @@ const ViewSales = () => {
             </label>
             <h2 className='text-xl w-full text-center md:text-start'>My Sales</h2>
             {/* search bar */}
-            <form action="" className='hidden md:flex items-center w-1/2'>
-              <input type="text" placeholder="Search in sales" className="input input-bordered rounded-full h-10 lg:w-full" />
+            <form action="" className='hidden md:flex items-center w-1/2' onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="text"
+                placeholder="Search in sales"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="input input-bordered rounded-full h-10 lg:w-full"
+              />
               <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
                 <MagnifyingGlassIcon className='w-6 h-6' />
               </button>
@@ -117,8 +131,14 @@ const ViewSales = () => {
           </div>
 
           {/* search bar mobile*/}
-          <form action="" className='flex md:hidden items-center w-full mt-4'>
-            <input type="text" placeholder="Search in sales" className="input input-bordered rounded-full h-10 w-full" />
+          <form action="" className='flex md:hidden items-center w-full mt-4' onSubmit={(e) => e.preventDefault()}>
+            <input
+              type="text"
+              placeholder="Search in sales"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="input input-bordered rounded-full h-10 w-full"
+            />
             <button type="submit" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
               <MagnifyingGlassIcon className='w-6 h-6' />
             </button>
@@ -126,7 +146,8 @@ const ViewSales = () => {
           {/* search bar */}
 
           {/* table start */}
-          {salesList.length <= 0 ? <div className='text-sm px-2 text-center'>No Items Found</div>
+          {filteredSales.length <= 0 && salesList.length > 0 ? <div className='text-sm px-2 text-center'>No sales match your search.<br/>Try a different search term!</div>
+            : filteredSales.length <= 0 ? <div className='text-sm px-2 text-center'>No Items Found</div>
             :
             <div className='overflow-auto'>
               <table className="table">
@@ -142,7 +163,8 @@ const ViewSales = () => {
                 </thead>
                 <tbody>
                   {/* row 1 */}
-                  {[...salesList].reverse().map((elem, inx) => {
+                  {filteredSales.map((elem, inx) => {
+                    const originalIndex = salesList.findIndex(sale => sale._id === elem._id);
                     return (
                       <tr className="hover" key={inx}>
                         <th>{inx + 1}</th>
@@ -154,7 +176,7 @@ const ViewSales = () => {
                             setPrintInvoiceData({
                               "custmrDetails": {
                                 cust_id: elem._id,
-                                cust_order_id: (salesList.length - inx),
+                                cust_order_id: (salesList.length - originalIndex),
                                 cust_name: elem.cust_name,
                                 cust_email: elem.cust_email,
                                 cust_contact: elem.cust_contact,
