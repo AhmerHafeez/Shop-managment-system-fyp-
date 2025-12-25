@@ -138,11 +138,14 @@ const ViewSales = () => {
                 type="text"
                 placeholder="Search in sales"
                 value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                onKeyDown={(e) => { if (e.key === 'Enter') setSearchTerm(inputValue); }}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setSearchTerm(e.target.value);
+                }}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); } }}
                 className="input input-bordered rounded-full h-10 lg:w-full"
               />
-              <button type="button" onClick={() => setSearchTerm(inputValue)} className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
+              <button type="button" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
                 <MagnifyingGlassIcon className='w-6 h-6' />
               </button>
             </div>
@@ -155,11 +158,14 @@ const ViewSales = () => {
               type="text"
               placeholder="Search in sales"
               value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') setSearchTerm(inputValue); }}
+              onChange={(e) => {
+                setInputValue(e.target.value);
+                setSearchTerm(e.target.value);
+              }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); } }}
               className="input input-bordered rounded-full h-10 w-full"
             />
-            <button type="button" onClick={() => setSearchTerm(inputValue)} className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
+            <button type="button" className='serch p-2 bg-blue-500 text-white rounded-md ms-2'>
               <MagnifyingGlassIcon className='w-6 h-6' />
             </button>
           </div>
