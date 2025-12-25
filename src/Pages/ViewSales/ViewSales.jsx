@@ -27,10 +27,10 @@ const ViewSales = () => {
 
   // Filter sales based on search term
   const filteredSales = salesList.filter(sale =>
-    sale.cust_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sale.cust_contact.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sale.cust_email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    sale.cust_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    sale.cust_contact?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    sale.cust_email?.toLowerCase().includes(searchTerm.toLowerCase())
+  ).reverse();
 
   const getSales = async () => {
     const token = localStorage.getItem('authToken');
